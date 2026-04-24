@@ -5,33 +5,55 @@ import pygame
 import itertools
 
 def getPathDistance(places : list):
-    #Given a list of x,y coordinates return the distance it would take to go to each coordinate
-    # in order and then back to the start.
     dist = 0
+    for i in range(len(places) - 1):
+        dist += getDistance(places[i], places[i + 1])
+    dist += getDistance(places[-1], places[0])
     return dist
 
-
 def full_TSP(places : list):
-    #Check the distance of all possible different paths one could take over a set of x,y coordiantes
-    #and return the path with the shotest distance
-    #Print out the number of distance calculations you had to do.
-
     bestRoute = []
+    bestDistance = float('n')
     calculations = 0
+
+    allPermutations = generatePermutations(places)
+
+    for perm in allPermutations:
+        route = list(perm)
+        dist = getPathDistance(route)
+        calculations += 1
+        if dist < bestDistance:
+            bestDistance = dist
+            bestRoute = route
 
     print(f"there were {calculations} calculations for full TSP")
     return bestRoute
 
 def hueristic_TSP(places : list):
-    #Perform a hueristic calculation for traveling salesman.
-    #For each node find the closest node to it and assume it is next node then repeat until you have your path.
-    #Return the path. andprint out the number of distance calculations you did.
-
-
     calculations = 0
+    unvisited = places.copy()
+    path = []
+
+    current = unvisited.pop(0)
+    path.append(current)
+
+    while unvisited:
+        bestDist = float('inf')
+        bestIndex = -1
+
+        for i, node in enumerate(unvisited):
+            dist = getDistance(current, node)
+            calculations += 1
+            if dist < bestDist:
+                bestDist = dist
+                bestNode = node
+                bestIndex = i
+
+        current = unvisited.pop(bestIndex)
+        path.append(current)
 
     print(f"there were {calculations} calculations for hueristic TSP")
-    return []
+    return path
 
 def generatePermutations(places : list):
     # a function that given a list will return all possible permutations of the list.
@@ -39,8 +61,7 @@ def generatePermutations(places : list):
 
 
 def getDistance(spot1, spot2):
-    #Given two coordinates in a plane return the distance between those two points.
-    dist = math.sqrt((spot1[0] - spot2[0]) ** 2 + (spot2[1] - spot2[1]) ** 2)
+    dist = math.sqrt((spot1[0] - spot2[0]) ** 2 + (spot1[1] - spot2[1]) ** 2)
     return dist
 
 
